@@ -1,0 +1,28 @@
+{
+  "name": "film_library",
+  "version": "1.0.0",
+  "description": "Film Library exercise",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucaAnto01/webapplication_lab.git"
+  },
+  "keywords": [
+    "WebApplication",
+    "Polito",
+    "FilmLibrary"
+  ],
+  "author": "LucaAnto01",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucaAnto01/webapplication_lab/issues"
+  },
+  "homepage": "https://github.com/LucaAnto01/webapplication_lab#readme",
+  "dependencies": {
+    "dayjs": "^1.11.10"
+  }
+}
