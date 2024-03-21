@@ -1,2 +1,5 @@
 # Node
 /film_library/node_modules
+
+# Base db
+/film_library/db/films_base.db
