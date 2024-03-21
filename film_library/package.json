@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/LucaAnto01/webapplication_lab#readme",
   "dependencies": {
-    "dayjs": "^1.11.10"
+    "dayjs": "^1.11.10",
+    "sqlite3": "^5.1.7"
   }
 }
