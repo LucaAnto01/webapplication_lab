@@ -17,7 +17,7 @@ export class Film {
         this.title = title;
         this.isFavorite = isFavorite;
         this.watchDate = watchDate ? dayjs(watchDate) : null;;
-        this.rating = rating;
+        this.rating = rating;        
     }
 
     /*-----------GETTERS & SETTERS-----------*/

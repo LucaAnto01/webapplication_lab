@@ -1,3 +1,7 @@
+import sqlite from "sqlite3"; //Import of SQL db
+import dayjs from 'dayjs';
+import { Film } from "./film.mjs";
+
 /** FilmLibrary class */
 export class FilmLibrary {
 
@@ -6,6 +10,9 @@ export class FilmLibrary {
      * FilmLibrary constructor
      */
     constructor() {
+        this.db = new sqlite.Database('./db/films.db',
+            (err) => { if (err) throw err; });
+        console.log(this.db);
         this.films = [];
     }
 
@@ -59,11 +66,24 @@ export class FilmLibrary {
         });
     }
 
+    /**
+     * Get rated films
+     * @returns films
+     */
     getRated() {
         const ratedFilms = this.films.filter(film => film.rating !== null); //Get film that has a rating
 
         ratedFilms.sort((a, b) => b.rating - a.rating); //Order decreasing score
         return ratedFilms;
+    }
+
+    /**
+     * Method to map rows into films
+     * @param {Promise} rows 
+     * @returns 
+     */
+    mapRowsToFilms(rows) {
+        return rows.map(row => new Film(row.id, row.title, row.isFavorite === 1, dayjs(row.watchdate), row.rating));
     }
 
     /**
@@ -76,5 +96,192 @@ export class FilmLibrary {
             output += `${film.toString()}\n`;
         });
         return output;
+    }
+
+    /**-----DB interactions-----*/
+    /**
+     * Method to execute a generic get query
+     * @param {string} query 
+     * @param {[string]} params 
+     * @returns 
+     */
+    executeGetQuery(query, params){
+        return new Promise((resolve, reject) => {
+            this.db.all(query, params, (err, rows) => {
+                if (err) 
+                    reject(err);
+                else 
+                    resolve(rows);
+                //this.db.close();
+            });
+        });
+    }
+
+    /**
+     * Method to execute a non query
+     * @param {string} query 
+     * @param {[string]} params 
+     * @returns 
+     */
+    executeNonQuery(query, params){
+        return new Promise((resolve, reject) => {
+            this.db.run(query, params, function(err) {
+                if (err) 
+                    reject(err);
+                else 
+                    resolve();
+            });
+        });
+    }
+
+    /**
+     * Method to get all the Film(s) present in db
+     * @returns Promise<[Film]>
+     */
+    async getAll(){
+        try {
+            const query = "SELECT * FROM films";                   
+            const rows = await this.executeGetQuery(query, []);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }        
+    }
+
+    /**
+     * Method to get all the favorites Film(s) present in db
+     * @returns Promise<[Film]>
+     */
+    async getAllFavorites(){
+        try {
+            const query = "SELECT * FROM films WHERE isFavorite = 1";                   
+            const rows = await this.executeGetQuery(query, []);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }  
+    
+    /**
+     * Method to get all films watched today present in the database
+     * @returns Promise<[Film]>
+     */
+    async getAllWatchedToday(){
+        try {
+            const today = dayjs().format('MMMM D, YYYY');
+            const query = "SELECT * FROM films WHERE watchdate = ?";                   
+            const rows = await this.executeGetQuery(query, [today]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+    /**
+     * Method to get films with a watch date is earlier than a given date
+     * @param {date} maxDate 
+     * @returns Promise<[Film]>
+     */
+    async getAllEarlierThanDate(maxDate){
+        try {
+            const query = "SELECT * FROM films WHERE watchdate < ?";                   
+            const rows = await this.executeGetQuery(query, [maxDate]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+    /**
+     * Method to get films with a rating is greater than or equal to a given number
+     * @param {number} minRating 
+     * @returns Promise<[Film]>
+     */
+    async getAllWithMinRating(minRating){
+        try {
+            const query = "SELECT * FROM films WHERE rating >= ?";                   
+            const rows = await this.executeGetQuery(query, [minRating]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+    /**
+     * Method to get films with a certain title
+     * @param {*} searchString 
+     * @returns Promise<[Film]>
+     */
+    async getAllWithTitleContaining(searchString){
+        try {
+            const query = "SELECT * FROM films WHERE title LIKE ?";                   
+            const rows = await this.executeGetQuery(query, [`%${searchString}%`]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    /**
+     * Function to store a new film in db
+     * @param {Film} film 
+     * @param {number} uid 
+     * @returns Promise<string>
+     */
+    async storeNewFilm(film, uid){
+        try {
+            const query = "INSERT INTO films (userId, title, isFavorite, watchdate, rating) VALUES (?, ?, ?, ?, ?)";
+            await this.executeNonQuery(query, [uid, film.title, film.isFavorite ? 1 : 0, film.watchDate ? film.watchDate.format('YYYY-MM-DD') : null, film.rating]);
+            return 'Film successfully stored in the database.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to store film in the database.';
+        }
+    }
+
+    /**
+     * Function to delete a film from db starting from its id
+     * @param {number} filmId 
+     * @returns Promise<string>
+     */
+    async deleteFilmById(filmId){
+        try {
+            const query = "DELETE FROM films WHERE id = ?";
+            await this.executeNonQuery(query, [filmId]);
+            return 'Film successfully deleted from the database.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to delete film from the database.';
+        }
+    }
+    
+    /**
+     * Function to delete all watches date of films
+     * @returns Promise<string>
+     */
+    async deleteAllWatchDates(){
+        try {
+            const query = "UPDATE films SET watchdate = NULL";
+            await this.executeNonQuery(query, []);
+            return 'Watch dates of all films successfully deleted from the database.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to delete watch dates of all films from the database.';
+        }
     }
 }
