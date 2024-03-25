@@ -165,6 +165,23 @@ export class FilmLibrary {
             throw error;
         }
     }  
+
+    /**
+     * Method to get a Film from its id
+     * @param {number} id 
+     * @returns Promise<Film>
+     */
+    async getFilmById(id){
+        try {
+            const query = "SELECT * FROM films WHERE id = " + id;                   
+            const rows = await this.executeGetQuery(query, []);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    } 
     
     /**
      * Method to get all films watched today present in the database
@@ -253,7 +270,7 @@ export class FilmLibrary {
     }
 
     /**
-     * Function to delete a film from db starting from its id
+     * Method to delete a film from db starting from its id
      * @param {number} filmId 
      * @returns Promise<string>
      */
@@ -270,7 +287,7 @@ export class FilmLibrary {
     }
     
     /**
-     * Function to delete all watches date of films
+     * Method to delete all watches date of films
      * @returns Promise<string>
      */
     async deleteAllWatchDates(){
@@ -278,6 +295,42 @@ export class FilmLibrary {
             const query = "UPDATE films SET watchdate = NULL";
             await this.executeNonQuery(query, []);
             return 'Watch dates of all films successfully deleted from the database.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to delete watch dates of all films from the database.';
+        }
+    }
+
+    /**
+     * Method to update the favorite status of a film
+     * @param {number} id 
+     * @param {boolean} isFav 
+     * @returns Promise<string>
+     */
+    async updateFavStatus(id, isFav){
+        try {
+            const query = "UPDATE films SET isFavorite = " + (isFav ? 1 : 0) + " WHERE id = " + id;
+            await this.executeNonQuery(query, []);
+            return 'Update favorite status of film successfully.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to delete watch dates of all films from the database.';
+        }
+    }
+
+    /**
+     * Method to update the rating of a film
+     * @param {number} id 
+     * @param {number} rating 
+     * @returns Promise<string>
+     */
+    async updateRating(id, rating){
+        try {
+            const query = "UPDATE films SET rating = " + rating + " WHERE id = " + id;
+            await this.executeNonQuery(query, []);
+            return 'Update rating of film successfully.';
         } 
         catch (error) {
             console.error(error);
