@@ -23,7 +23,9 @@
   },
   "homepage": "https://github.com/LucaAnto01/webapplication_lab#readme",
   "dependencies": {
+    "body-parser": "^1.20.2",
     "dayjs": "^1.11.10",
+    "express": "^4.19.1",
     "sqlite3": "^5.1.7"
   }
 }
