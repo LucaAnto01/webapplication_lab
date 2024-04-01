@@ -201,6 +201,40 @@ export class FilmLibrary {
     }
 
     /**
+     * Method to get films watched last month
+     * @returns Promise<[Film]>
+     */
+    async getFilmsWatchedLastMonth() {
+        try {
+            const lastMonth = dayjs().subtract(30, 'day').format('YYYY-MM-DD');
+            const today = dayjs().format('YYYY-MM-DD');
+            const query = "SELECT * FROM films WHERE watchDate BETWEEN ? AND ?";
+            const rows = await this.executeGetQuery(query, [lastMonth, today]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    /**
+     * Method to get films without a watch date
+     * @returns Promise<[Film]>
+     */
+    async getUnseenFilms() {
+        try {
+            const query = "SELECT * FROM films WHERE watchDate IS NULL";
+            const rows = await this.executeGetQuery(query, []);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    /**
      * Method to get films with a watch date is earlier than a given date
      * @param {date} maxDate 
      * @returns Promise<[Film]>
@@ -226,6 +260,22 @@ export class FilmLibrary {
         try {
             const query = "SELECT * FROM films WHERE rating >= ?";                   
             const rows = await this.executeGetQuery(query, [minRating]);
+            return this.mapRowsToFilms(rows);
+        } 
+        catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+    /**
+     * Method to get films with a rating is 5
+     * @returns Promise<[Film]>
+     */
+    async getBestRated(){
+        try {
+            const query = "SELECT * FROM films WHERE rating = 5";                   
+            const rows = await this.executeGetQuery(query, []);
             return this.mapRowsToFilms(rows);
         } 
         catch (error) {
@@ -335,6 +385,44 @@ export class FilmLibrary {
         catch (error) {
             console.error(error);
             throw 'Failed to delete watch dates of all films from the database.';
+        }
+    }
+
+    /**
+     * Update an existing film in the library
+     * @param {number} id 
+     * @param {object} updatedProperties
+     * @returns Promise<string>
+     */
+    async updateFilm(id, updatedProperties) {
+        try {
+            //Get the existing film from the database
+            const existingFilm = await this.getFilmById(id);
+            if (!existingFilm)
+                throw new Error('Film not found.');        
+
+            //Update the existing film with the provided properties
+            for (const property in updatedProperties)
+                if (updatedProperties.hasOwnProperty(property))
+                    existingFilm[property] = updatedProperties[property];
+
+            //Update the selected film
+            const query = "UPDATE films SET title = ?, isFavorite = ?, watchdate = ?, rating = ? WHERE id = ?";
+            const params = [
+                existingFilm.title,
+                existingFilm.isFavorite ? 1 : 0,
+                existingFilm.watchDate ? dayjs(existingFilm.watchDate) : null,
+                existingFilm.rating,
+                id
+            ];
+
+            await this.executeNonQuery(query, params);
+
+            return 'Film updated successfully.';
+        } 
+        catch (error) {
+            console.error(error);
+            throw 'Failed to update film.';
         }
     }
 }

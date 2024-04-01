@@ -1,10 +1,10 @@
-GET http://localhost:3000/films HTTP/1.1
+GET http://localhost:3000/films
 ###
 
-GET http://localhost:3000/films/1 HTTP/1.1
+GET http://localhost:3000/films/1
 ###
 
-POST http://localhost:3000/addFilm HTTP/1.1
+POST http://localhost:3000/addFilm
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 ###
 
-PATCH http://localhost:3000/updateFav/5/favorite HTTP/1.1
+PATCH http://localhost:3000/updateFav/5/favorite
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 ###
 
-PATCH http://localhost:3000/updateRating/1/rating HTTP/1.1
+PATCH http://localhost:3000/updateRating/1/rating
 Content-Type: application/json
 
 {
@@ -31,4 +31,30 @@ Content-Type: application/json
 }
 ###
 
-DELETE http://localhost:3000/deleteFilm/6 HTTP/1.1
+DELETE http://localhost:3000/deleteFilm/7
+###
+
+GET http://localhost:3000/filteredFilms
+###
+
+GET http://localhost:3000/filteredFilms?filter=favorite
+###
+
+GET http://localhost:3000/filteredFilms?filter=best
+###
+
+GET http://localhost:3000/filteredFilms?filter=lastmonth
+###
+
+GET http://localhost:3000/filteredFilms?filter=unseen
+###
+
+PUT http://localhost:3000/updateFilm/7
+Content-Type: application/json
+
+{
+    "title": "Updated Title",
+    "isFavorite": true,
+    "watchDate": "2024-03-15",
+    "rating": 4.5
+}

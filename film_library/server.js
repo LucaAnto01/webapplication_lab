@@ -21,6 +21,38 @@ app.get('/films', async (req, res) => {
     }
 });
 
+//Get films based on filters
+app.get('/filteredFilms', async (req, res) => {
+    try {
+        const { filter } = req.query;
+        let films;
+
+        //Select the filter
+        switch (filter) { 
+            case 'favorite':
+                films = await filmLibrary.getAllFavorites();
+                break;
+            case 'best':
+                films = await filmLibrary.getBestRated();
+                break;
+            case 'lastmonth':
+                films = await filmLibrary.getFilmsWatchedLastMonth();
+                break;
+            case 'unseen':
+                films = await filmLibrary.getUnseenFilms();
+                break;
+            default:
+                films = await filmLibrary.getAll();
+                break;
+        }
+
+        res.json(films);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to retrieve films.' });
+    }
+});
+
 //Get film by its ID
 app.get('/films/:id', async (req, res) => {
     const filmId = parseInt(req.params.id);
@@ -92,6 +124,27 @@ app.patch('/updateRating/:id/rating', async (req, res) => {
     } 
     catch (error) {
         res.status(500).json({ error: 'Failed to update rating.' });
+    }
+});
+
+//Update an existing film
+app.put('/updateFilm/:id', async (req, res) => {
+    const filmId = parseInt(req.params.id);
+    if (isNaN(filmId)) {
+        res.status(400).json({ error: 'Invalid film ID.' });
+        return;
+    }
+
+    try {
+        //Get updated properties from the request body
+        const updatedProperties = req.body;        
+        const message = await filmLibrary.updateFilm(filmId, updatedProperties);
+
+        res.json({ message });
+    } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update film.' });
     }
 });
 
