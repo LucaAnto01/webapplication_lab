@@ -1,0 +1,21 @@
+/*Primary background color*/
+.bg-primary{    
+    background-color: #0d6efd !important;
+}
+
+.white-icon{
+    color: white !important;
+}
+
+.white-text{
+    color: white !important;
+}
+
+.is-favorite{
+    color:green !important;
+}
+
+/*Pass on empty-star*/
+.bi-star:hover{
+    color: darkgray;
+}
