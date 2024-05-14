@@ -3,3 +3,6 @@
 
 # Base db
 /film_library/db/films_base.db
+
+# Test project
+/react/firstTest

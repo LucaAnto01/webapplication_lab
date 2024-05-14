@@ -4,7 +4,8 @@
   "description": "Film Library exercise",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "type": "module",
   "repository": {
@@ -26,6 +27,8 @@
     "body-parser": "^1.20.2",
     "dayjs": "^1.11.10",
     "express": "^4.19.1",
+    "express-validator": "^7.0.1",
+    "nodemon": "^3.1.0",
     "sqlite3": "^5.1.7"
   }
 }
