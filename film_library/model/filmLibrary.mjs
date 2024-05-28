@@ -1,5 +1,6 @@
 import sqlite from "sqlite3"; //Import of SQL db
 import dayjs from 'dayjs';
+import { validationResult } from 'express-validator'; //Validator
 import { Film } from "./film.mjs";
 
 /** FilmLibrary class */
@@ -14,6 +15,7 @@ export class FilmLibrary {
             (err) => { if (err) throw err; });
         console.log(this.db);
         this.films = [];
+        //this.validator = expressValidator(); //Initialize the validator
     }
 
     /*-----------METHODS-----------*/
@@ -172,6 +174,10 @@ export class FilmLibrary {
      * @returns Promise<Film>
      */
     async getFilmById(id){
+        const errors = validationResult({ params: { id } });
+        if (!errors.isEmpty())
+            throw new Error('Invalid ID'); // or handle the error appropriately
+        
         try {
             const query = "SELECT * FROM films WHERE id = " + id;                   
             const rows = await this.executeGetQuery(query, []);
@@ -179,7 +185,6 @@ export class FilmLibrary {
         } 
         catch (error) {
             console.error(error);
-            throw error;
         }
     } 
     
@@ -290,7 +295,7 @@ export class FilmLibrary {
      * @returns Promise<[Film]>
      */
     async getAllWithTitleContaining(searchString){
-        try {
+        try {       
             const query = "SELECT * FROM films WHERE title LIKE ?";                   
             const rows = await this.executeGetQuery(query, [`%${searchString}%`]);
             return this.mapRowsToFilms(rows);
@@ -396,6 +401,7 @@ export class FilmLibrary {
      */
     async updateFilm(id, updatedProperties) {
         try {
+            //TODO: ADD VALIDATOR
             //Get the existing film from the database
             const existingFilm = await this.getFilmById(id);
             if (!existingFilm)
