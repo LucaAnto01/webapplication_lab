@@ -13,7 +13,7 @@ function NavigationBar(){
             </Form>
             <Nav>
                 <Nav.Item>
-                    <Nav.Link href="#">
+                    <Nav.Link href="/">
                         <div className="fs-4 mx-2">
                             <i className="bi bi-person-circle icon-size" />
                         </div>

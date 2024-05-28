@@ -16,7 +16,7 @@ function FilmArea(props){
                 </tr>
             </thead>     
             <tbody>
-            {films.map((film) => <FilmElement filmData={film} key={film.id} delete={props.delete} setFilmToEdit={props.setFilmToEdit} setShowForm={props.setShowForm} />)}
+                {films.map((film) => <FilmElement filmData={film} key={film.id} delete={props.delete} setFilmToEdit={props.setFilmToEdit} setShowForm={props.setShowForm} />)}
             </tbody>
         </Table>
     );

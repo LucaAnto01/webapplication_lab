@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {useState} from 'react';
 import {Form, Button, Alert} from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
 
 function FilmForm(props){
     const [title, setTitle] = useState(props.filmToEdit ? props.filmToEdit.title : '');
@@ -8,6 +9,7 @@ function FilmForm(props){
     const [watchDate, setWatchDate] = useState((props.filmToEdit && props.filmToEdit.watchDate) ? props.filmToEdit.watchDate.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'));
     const [rating, setRating] = useState((props.filmToEdit && props.filmToEdit.rating) ? props.filmToEdit.rating : 0);
     const [errorMsg, setErrorMsg] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -23,14 +25,15 @@ function FilmForm(props){
         } else if (film.rating < 0 || film.rating > 5) {
           setErrorMsg('Invalid value for Rating');
         } else {
-          // Proceed to update the data
-    
+          // Proceed to update the data    
           if (props.filmToEdit) {
             // Film was edited, not created from scratch
             film.id = props.filmToEdit.id;
             props.editFilm(film);
+            navigate('/');
           } else {
             props.addFilm(film);
+            navigate('/');
           }
         }
       }
@@ -62,7 +65,9 @@ function FilmForm(props){
     
           <Button className="mb-3" variant="primary" type="submit">Save</Button>
           &nbsp;
-          <Button className="mb-3" variant="danger" onClick={props.cancel}>Cancel</Button>
+          <Link to={"/"} >
+            <Button className="mb-3" variant="danger">Cancel</Button>
+          </Link>
         </Form>
         </>
       )

@@ -1,5 +1,6 @@
 import 'dayjs';
 import { Form, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 function FilmElement(props){
     //Format date
@@ -15,7 +16,11 @@ function FilmElement(props){
             <td><Rating rating={props.filmData.rating} maxStars={5} /></td>
             <td>
                 <Button variant='danger' onClick={() => { props.delete(props.filmData.id) }} ><i className='bi bi-trash'></i></Button>
-                <Button className="mx-2" variant='warning' onClick={() => { props.setFilmToEdit(props.filmData); props.setShowForm(true); }} ><i className='bi bi-pencil'></i></Button>
+                <Link to={`/edit/${props.filmData.id}`}>
+                    <Button className="mx-2" variant='warning'>
+                        <i className='bi bi-pencil'></i>
+                    </Button>
+                </Link>
             </td>
         </tr>
     );

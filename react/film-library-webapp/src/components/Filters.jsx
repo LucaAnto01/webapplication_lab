@@ -1,4 +1,5 @@
 import { ListGroup } from "react-bootstrap";
+import { NavLink } from 'react-router-dom';
 
 /**
  * Filter menu
@@ -6,15 +7,15 @@ import { ListGroup } from "react-bootstrap";
  * @returns 
  */
 function Filters(props){
-    const {items, selected, onSelect} = props;
+    const { filterArray } = props;
     return(
         <ListGroup as="ul" className="mt-1">
             {
-                items.map( element => {
+                filterArray.map( element => {
                     return(
-                        <ListGroup.Item as="li" key={element.filterName} active={selected === element.filterName ? true : false} action href="#" onClick={() => onSelect(element.filterName)}>
-                            {element.text}
-                        </ListGroup.Item>
+                        <NavLink className="list-group-item" key={element.url} to={`${element.url}`} >
+                            {element.label}
+                        </NavLink>
                     );
                 })
             }
